@@ -1,6 +1,6 @@
 default: all
 
-# Cプログラム作成用Makefileのテンプレです
+# Cプログラムのアーカイブ作成用のMakefileです
 
 INTERMEDIATE := ./build
 $(shell mkdir -p $(INTERMEDIATE))
@@ -9,32 +9,23 @@ CSRCDIR := src
 CSRC := $(wildcard $(addprefix $(CSRCDIR)/,*.c))
 OBJS := $(addprefix $(INTERMEDIATE)/,$(notdir $(CSRC:%.c=%.o)))
 DEPE := $(addprefix $(INTERMEDIATE)/,$(notdir $(CSRC:%.c=%.d)))
-LIBDIR := ./lib
-LDFLAGS := -L$(LIBDIR)
-INCLUDE := -I$(LIBDIR)/src
-LIBS := -lmy
-program := program
+ARCHIVE := libmy.a
 
 CC := gcc
-CFLAGS := -O2 -MMD -g $(INCLUDE) # $(addprefix -I,$(INCLUDE_PATH))
+CFLAGS := -O2 -MMD
 
 # allとcleanはファイルではなくターゲットであると宣言する
 .PHONY: all clean
+all: $(ARCHIVE)
 
-# 実行する
-all: $(program)
-	./$<
-# コンパイルする
-$(program): $(OBJS)
-	make -C $(LIBDIR)
-	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+# アーカイブする
+$(ARCHIVE): $(OBJS)
+	ar r $@ $^
 $(OBJS): build/%.o: $(CSRCDIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $(filter %.c,$^) -MF $(patsubst %.o,%.d,$@)
 
 # 中間ファイルをすべて消去する
 clean:
-	make $@ -C $(LIBDIR) 
-	rm -rf $(INTERMEDIATE) $(program)
+	rm -rf $(INTERMEDIATE) $(ARCHIVE)
 	
 -include $(DEPE)
-
