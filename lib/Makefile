@@ -2,13 +2,15 @@ default: all
 
 # Cプログラムのアーカイブ作成用のMakefileです
 
+MAKEFLAGS ?= -j$(shell nproc)
+
 INTERMEDIATE := ./build
 $(shell mkdir -p $(INTERMEDIATE))
 
 CSRCDIR := src
 CSRC := $(wildcard $(addprefix $(CSRCDIR)/,*.c))
-OBJS := $(addprefix $(INTERMEDIATE)/,$(notdir $(CSRC:%.c=%.o)))
-DEPE := $(addprefix $(INTERMEDIATE)/,$(notdir $(CSRC:%.c=%.d)))
+OBJS := $(CSRC:$(CSRCDIR)/%.c=$(INTERMEDIATE)/%.o)
+DEPE := $(OBJS:%.o=%.d)
 ARCHIVE := libmy.a
 
 CC := gcc
