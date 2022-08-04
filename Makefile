@@ -15,7 +15,7 @@ LIBDIR := ./lib
 LDFLAGS := -L$(LIBDIR)
 INCLUDE := -I$(LIBDIR)/src
 LIBS := -lmy
-program := program
+program := $(INTERMEDIATE)/program
 
 CC := gcc
 CFLAGS := -O2 -MMD -g $(INCLUDE)
